@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celtic Trekking — Mobile App</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --navy: #011231;
+            --navy-mid: #0A1E4A;
+            --navy-light: #162D5A;
+            --navy-accent: #1E3A6E;
+            --navy-soft: #254B80;
+            --gold: #D4A843;
+            --gold-light: #E8C96A;
+            --gold-dark: #B8922E;
+            --white: #FFFFFF;
+            --off-white: #F5F7FA;
+            --blue-gray: #E2E8F0;
+            --input-bg: #EEF1F6;
+            --card-shadow: rgba(1, 18, 49, 0.07);
+            --dark-text: #0D1B2A;
+            --body-text: #1B2A4A;
+            --muted: #6B7A94;
+            --border: #D8DEE8;
+            --success: #1B8A5A;
+            --error: #D63031;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #060A14;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .ambient {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .ambient .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(130px);
+            opacity: 0.18;
+            animation: floatBlob 14s ease-in-out infinite;
+        }
+
+        .ambient .blob:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: var(--navy);
+            top: -15%;
+            left: -8%;
+        }
+
+        .ambient .blob:nth-child(2) {
+            width: 420px;
+            height: 420px;
+            background: var(--navy-mid);
+            bottom: -10%;
+            right: -8%;
+            animation-delay: -5s;
+        }
+
+        .ambient .blob:nth-child(3) {
+            width: 300px;
+            height: 300px;
+            background: var(--gold);
+            top: 45%;
+            left: 55%;
+            opacity: 0.08;
+            animation-delay: -9s;
+        }
+
+        @keyframes floatBlob {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(25px, -18px) scale(1.04);
+            }
+
+            66% {
+                transform: translate(-18px, 12px) scale(0.96);
+            }
+        }
+
+        /* Phone frame */
+        .phone-frame {
+            position: relative;
+            z-index: 1;
+            width: 390px;
+            height: 844px;
+            border-radius: 48px;
+            background: #000;
+            padding: 12px;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.06), 0 30px 80px rgba(0, 0, 0, 0.55), 0 0 80px rgba(1, 18, 49, 0.15);
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 38px;
+            overflow: hidden;
+            position: relative;
+            background: var(--white);
+        }
+
+        /* Status bar */
+        .status-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 28px 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-bar.light {
+            color: var(--white);
+        }
+
+        .status-bar.dark {
+            color: var(--dark-text);
+        }
+
+        .status-bar .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 126px;
+            height: 34px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        .screens-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .screen {
+            position: absolute;
+            inset: 0;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .screen::-webkit-scrollbar {
+            display: none;
+        }
+
+        .screen.active {
+            transform: translateX(0);
+            opacity: 1;
+            z-index: 10;
+        }
+
+        .screen.left {
+            transform: translateX(-100%);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .screen.right {
+            transform: translateX(100%);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        /* ===== SHARED FORM STYLES ===== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--body-text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 7px;
+        }
+
+        .form-input-wrap {
+            position: relative;
+        }
+
+        .form-input-wrap i.icon-left {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            font-size: 15px;
+            transition: color 0.3s;
+            pointer-events: none;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 13px 14px 13px 42px;
+            background: var(--input-bg);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            color: var(--dark-text);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-input::placeholder {
+            color: #A0AABE;
+        }
+
+        .form-input:focus {
+            border-color: var(--navy);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(1, 18, 49, 0.08);
+        }
+
+        .form-input:focus~i.icon-left,
+        .form-input-wrap:focus-within i.icon-left {
+            color: var(--navy);
+        }
+
+        .form-input.select-input {
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .eye-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 15px;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+        }
+
+        .eye-toggle:hover {
+            color: var(--dark-text);
+        }
+
+        .checkbox-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid var(--border);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            background: var(--input-bg);
+        }
+
+        .custom-checkbox.checked {
+            background: var(--navy);
+            border-color: var(--navy);
+        }
+
+        .custom-checkbox i {
+            font-size: 10px;
+            color: var(--white);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .custom-checkbox.checked i {
+            opacity: 1;
+        }
+
+        .checkbox-label {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary.navy {
+            background: var(--navy);
+        }
+
+        .btn-primary.gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--navy);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 22px 0;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider-text {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .social-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 13px;
+            background: var(--input-bg);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--dark-text);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .social-btn:hover {
+            border-color: var(--navy-light);
+            background: var(--white);
+        }
+
+        .social-btn i {
+            font-size: 17px;
+        }
+
+        .social-btn.google i {
+            color: #EA4335;
+        }
+
+        .social-btn.facebook i {
+            color: #1877F2;
+        }
+
+        .switch-text {
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .switch-link {
+            color: var(--navy);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* ===== LOGIN SCREEN ===== */
+        .login-screen {
+            background: var(--white);
+        }
+
+        .login-hero {
+            position: relative;
+            height: 240px;
+            overflow: hidden;
+        }
+
+        .login-hero-img {
+            position: absolute;
+            inset: 0;
+            background: url('https://picsum.photos/seed/celticmtnv3/800/500') center/cover;
+        }
+
+        .login-hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(175deg, rgba(1, 18, 49, 0.4) 0%, rgba(1, 18, 49, 0.75) 55%, var(--navy) 100%);
+        }
+
+        .login-hero-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            padding-bottom: 28px;
+        }
+
+        .brand-logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .brand-mountain-icon {
+            width: 42px;
+            height: 42px;
+            position: relative;
+        }
+
+        .brand-mountain-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: 1.5px;
+        }
+
+        .brand-tagline {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .login-body {
+            padding: 28px 28px 20px;
+        }
+
+        .login-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 4px;
+        }
+
+        .login-subtitle {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .forgot-link {
+            font-size: 13px;
+            color: var(--navy);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* ===== REGISTER SCREEN ===== */
+        .register-screen {
+            background: var(--white);
+        }
+
+        .register-hero {
+            position: relative;
+            height: 150px;
+            overflow: hidden;
+        }
+
+        .register-hero-img {
+            position: absolute;
+            inset: 0;
+            background: url('https://picsum.photos/seed/nepaltrailv3/800/400') center/cover;
+        }
+
+        .register-hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(175deg, rgba(1, 18, 49, 0.3) 0%, rgba(1, 18, 49, 0.7) 60%, var(--navy) 100%);
+        }
+
+        .register-hero-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: flex-end;
+            height: 100%;
+            padding: 0 28px 20px;
+        }
+
+        .register-hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .register-body {
+            padding: 24px 28px 20px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 18px;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .back-btn:hover {
+            color: var(--dark-text);
+        }
+
+        .step-indicator {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .step-dot {
+            height: 4px;
+            border-radius: 2px;
+            background: var(--border);
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .step-dot.active {
+            background: var(--navy);
+        }
+
+        .step-dot.completed {
+            background: var(--gold);
+        }
+
+        .password-strength {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .strength-bar {
+            flex: 1;
+            height: 3px;
+            border-radius: 2px;
+            background: var(--border);
+            transition: all 0.3s;
+        }
+
+        .strength-bar.filled-weak {
+            background: var(--error);
+        }
+
+        .strength-bar.filled-fair {
+            background: #F39C12;
+        }
+
+        .strength-bar.filled-good {
+            background: var(--gold);
+        }
+
+        .strength-bar.filled-strong {
+            background: var(--success);
+        }
+
+        .strength-text {
+            font-size: 11px;
+            margin-top: 4px;
+            color: var(--muted);
+        }
+
+        /* ===== DASHBOARD SCREEN ===== */
+        .dashboard-screen {
+            background: var(--off-white);
+        }
+
+        .dash-header {
+            background: var(--navy);
+            padding: 56px 24px 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dash-header-bg {
+            position: absolute;
+            inset: 0;
+            background: url('https://picsum.photos/seed/himalayaskyv3/800/400') center/cover;
+            opacity: 0.1;
+        }
+
+        .dash-header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .dash-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .dash-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--navy-accent), var(--gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .dash-header-icons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dash-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 15px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .dash-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .notif-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 16px;
+            height: 16px;
+            background: var(--error);
+            border-radius: 50%;
+            font-size: 9px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            border: 2px solid var(--navy);
+        }
+
+        .dash-greeting {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 2px;
+        }
+
+        .dash-sub-greeting {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.45);
+            margin-bottom: 18px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 11px 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-bar i {
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 15px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .dash-body {
+            padding: 20px 24px 100px;
+        }
+
+        /* Stats */
+        .quick-stats {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 14px 12px;
+            box-shadow: 0 2px 12px var(--card-shadow);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:active {
+            transform: scale(0.97);
+        }
+
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .stat-icon.navy {
+            background: rgba(1, 18, 49, 0.08);
+            color: var(--navy);
+        }
+
+        .stat-icon.gold {
+            background: rgba(212, 168, 67, 0.1);
+            color: var(--gold-dark);
+        }
+
+        .stat-icon.blue {
+            background: rgba(30, 58, 110, 0.08);
+            color: var(--navy-accent);
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-text);
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+
+        .section-link {
+            font-size: 12px;
+            color: var(--navy);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* Upcoming trek */
+        .upcoming-card {
+            background: var(--navy);
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 18px;
+            position: relative;
+            overflow: hidden;
+            color: var(--white);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .upcoming-card:active {
+            transform: scale(0.98);
+        }
+
+        .upcoming-card-bg {
+            position: absolute;
+            inset: 0;
+            background: url('https://picsum.photos/seed/annapurnav3/800/400') center/cover;
+            opacity: 0.15;
+        }
+
+        .upcoming-card-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .upcoming-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(212, 168, 67, 0.15);
+            border: 1px solid rgba(212, 168, 67, 0.3);
+            border-radius: 20px;
+            padding: 4px 11px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--gold-light);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .upcoming-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .upcoming-location {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.45);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .upcoming-meta {
+            display: flex;
+            gap: 18px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .meta-item i {
+            color: var(--gold);
+            font-size: 13px;
+        }
+
+        /* CTA banner */
+        .cta-banner {
+            background: var(--navy);
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--white);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .cta-banner:active {
+            transform: scale(0.98);
+        }
+
+        .cta-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            color: var(--gold);
+            flex-shrink: 0;
+        }
+
+        .cta-text-wrap {
+            flex: 1;
+        }
+
+        .cta-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .cta-sub {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .cta-arrow {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+        }
+
+        /* Destinations */
+        .dest-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            margin-bottom: 22px;
+            scroll-snap-type: x mandatory;
+        }
+
+        .dest-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .dest-card {
+            min-width: 148px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--white);
+            box-shadow: 0 4px 16px var(--card-shadow);
+            scroll-snap-align: start;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .dest-card:active {
+            transform: scale(0.97);
+        }
+
+        .dest-card-img {
+            width: 100%;
+            height: 95px;
+            object-fit: cover;
+        }
+
+        .dest-card-body {
+            padding: 10px 12px 12px;
+        }
+
+        .dest-card-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 2px;
+        }
+
+        .dest-card-info {
+            font-size: 11px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dest-card-rating {
+            color: var(--gold-dark);
+            font-size: 10px;
+        }
+
+        /* Reviews */
+        .review-card {
+            background: var(--white);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 12px var(--card-shadow);
+            display: flex;
+            gap: 12px;
+        }
+
+        .review-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .review-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 2px;
+        }
+
+        .review-stars {
+            color: var(--gold-dark);
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+
+        .review-text {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: var(--white);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 28px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: none;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .nav-item i {
+            font-size: 19px;
+            color: var(--muted);
+            transition: color 0.2s;
+        }
+
+        .nav-item span {
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active i {
+            color: var(--navy);
+        }
+
+        .nav-item.active span {
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .nav-item-center {
+            width: 46px;
+            height: 46px;
+            border-radius: 15px;
+            background: var(--navy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: -18px;
+            box-shadow: 0 6px 20px rgba(1, 18, 49, 0.3);
+        }
+
+        .nav-item-center i {
+            color: var(--white) !important;
+            font-size: 20px;
+        }
+
+        /* Toast */
+        .toast {
+            position: absolute;
+            top: 56px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            z-index: 200;
+            background: var(--white);
+            border-radius: 14px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast i {
+            font-size: 17px;
+        }
+
+        .toast.success i {
+            color: var(--success);
+        }
+
+        .toast.error i {
+            color: var(--error);
+        }
+
+        .toast-text {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--dark-text);
+        }
+
+        .btn-loader {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        .btn-loader.dark {
+            border-color: rgba(1, 18, 49, 0.15);
+            border-top-color: var(--navy);
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in>* {
+            animation: fadeInUp 0.4s ease both;
+        }
+
+        .animate-in>*:nth-child(1) {
+            animation-delay: 0.02s;
+        }
+
+        .animate-in>*:nth-child(2) {
+            animation-delay: 0.05s;
+        }
+
+        .animate-in>*:nth-child(3) {
+            animation-delay: 0.08s;
+        }
+
+        .animate-in>*:nth-child(4) {
+            animation-delay: 0.11s;
+        }
+
+        .animate-in>*:nth-child(5) {
+            animation-delay: 0.14s;
+        }
+
+        .animate-in>*:nth-child(6) {
+            animation-delay: 0.17s;
+        }
+
+        .animate-in>*:nth-child(7) {
+            animation-delay: 0.20s;
+        }
+
+        .animate-in>*:nth-child(8) {
+            animation-delay: 0.23s;
+        }
+
+        .animate-in>*:nth-child(9) {
+            animation-delay: 0.26s;
+        }
+
+        .animate-in>*:nth-child(10) {
+            animation-delay: 0.29s;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .animate-in>*,
+            .ambient .blob,
+            .screen {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+        /* Mountain SVG logo styling */
+        .mountain-logo {
+            fill: var(--white);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="ambient">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+
+    <div class="phone-frame">
+        <div class="phone-screen">
+
+            <div class="status-bar light" id="statusBar">
+                <span>9:41</span>
+                <div class="notch"></div>
+                <div class="status-icons">
+                    <i class="fas fa-signal" style="font-size:10px"></i>
+                    <i class="fas fa-wifi" style="font-size:10px"></i>
+                    <i class="fas fa-battery-full" style="font-size:12px"></i>
+                </div>
+            </div>
+
+            <div class="toast" id="toast">
+                <i class="fas fa-check-circle"></i>
+                <span class="toast-text" id="toastText">Success</span>
+            </div>
+
+            <div class="screens-container">
+
+                <!-- ===== LOGIN ===== -->
+                <div class="screen login-screen active" id="loginScreen">
+                    <div class="login-hero">
+                        <div class="login-hero-img"></div>
+                        <div class="login-hero-overlay"></div>
+                        <div class="login-hero-content">
+                            <div class="brand-logo-wrap">
+                                <div class="brand-mountain-icon">
+                                    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M24 4L4 40H44L24 4Z" fill="rgba(255,255,255,0.9)" />
+                                        <path d="M32 14L18 40H46L32 14Z" fill="rgba(255,255,255,0.5)" />
+                                        <circle cx="36" cy="12" r="4" fill="rgba(212,168,67,0.8)" />
+                                    </svg>
+                                </div>
+                                <div class="brand-name">CELTIC TREKKING</div>
+                            </div>
+                            <div class="brand-tagline">Adventure</div>
+                        </div>
+                    </div>
+                    <div class="login-body animate-in">
+                        <div class="login-title">Welcome Back</div>
+                        <div class="login-subtitle">Sign in to continue your journey</div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <div class="form-input-wrap">
+                                <input type="email" class="form-input" id="loginEmail"
+                                    placeholder="explorer@celtictrekking.com" autocomplete="email">
+                                <i class="fas fa-envelope icon-left"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <div class="form-input-wrap">
+                                <input type="password" class="form-input" id="loginPassword"
+                                    placeholder="Enter your password" autocomplete="current-password">
+                                <i class="fas fa-lock icon-left"></i>
+                                <button class="eye-toggle" onclick="togglePassword('loginPassword', this)"
+                                    aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="checkbox-wrap" onclick="toggleCheckbox(this)">
+                                <div class="custom-checkbox" id="rememberCheck"><i class="fas fa-check"></i></div>
+                                <span class="checkbox-label">Remember me</span>
+                            </div>
+                            <a href="#" class="forgot-link"
+                                onclick="showToast('Reset link sent to your email', 'success'); return false;">Forgot
+                                password?</a>
+                        </div>
+
+                        <button class="btn-primary navy" id="loginBtn" onclick="handleLogin()">Sign In</button>
+
+                        <div class="divider">
+                            <div class="divider-line"></div>
+                            <span class="divider-text">or continue with</span>
+                            <div class="divider-line"></div>
+                        </div>
+
+                        <div class="social-row">
+                            <button class="social-btn google"
+                                onclick="showToast('Google sign-in coming soon', 'success')"><i
+                                    class="fab fa-google"></i> Google</button>
+                            <button class="social-btn facebook"
+                                onclick="showToast('Facebook sign-in coming soon', 'success')"><i
+                                    class="fab fa-facebook-f"></i> Facebook</button>
+                        </div>
+
+                        <div class="switch-text">Don't have an account? <a class="switch-link"
+                                onclick="navigateTo('register')">Create one</a></div>
+                    </div>
+                </div>
+
+                <!-- ===== REGISTER ===== -->
+                <div class="screen register-screen right" id="registerScreen">
+                    <div class="register-hero">
+                        <div class="register-hero-img"></div>
+                        <div class="register-hero-overlay"></div>
+                        <div class="register-hero-content">
+                            <div class="register-hero-title">Join the Expedition</div>
+                        </div>
+                    </div>
+                    <div class="register-body animate-in">
+                        <button class="back-btn" onclick="navigateTo('login')"><i class="fas fa-arrow-left"></i> Back to
+                            Sign In</button>
+
+                        <div class="step-indicator">
+                            <div class="step-dot active"></div>
+                            <div class="step-dot"></div>
+                            <div class="step-dot"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <div class="form-input-wrap">
+                                <input type="text" class="form-input" id="regName" placeholder="Sir Edmund Hillary">
+                                <i class="fas fa-user icon-left"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <div class="form-input-wrap">
+                                <input type="email" class="form-input" id="regEmail"
+                                    placeholder="explorer@celtictrekking.com">
+                                <i class="fas fa-envelope icon-left"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <div class="form-input-wrap">
+                                <input type="password" class="form-input" id="regPassword"
+                                    placeholder="Min. 8 characters" oninput="checkPasswordStrength(this.value)">
+                                <i class="fas fa-lock icon-left"></i>
+                                <button class="eye-toggle" onclick="togglePassword('regPassword', this)"
+                                    aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+                            </div>
+                            <div class="password-strength" id="strengthBars">
+                                <div class="strength-bar"></div>
+                                <div class="strength-bar"></div>
+                                <div class="strength-bar"></div>
+                                <div class="strength-bar"></div>
+                            </div>
+                            <div class="strength-text" id="strengthText"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Preferred Destination</label>
+                            <div class="form-input-wrap">
+                                <select class="form-input select-input" id="regDestination">
+                                    <option value="" disabled selected>Choose your trail</option>
+                                    <option value="nepal">Nepal — Himalayas</option>
+                                    <option value="tibet">Tibet — Roof of the World</option>
+                                    <option value="morocco">Morocco — Atlas Mountains</option>
+                                    <option value="romania">Romania — Carpathians</option>
+                                </select>
+                                <i class="fas fa-compass icon-left"></i>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 18px;">
+                            <div class="checkbox-wrap" onclick="toggleCheckbox(this)">
+                                <div class="custom-checkbox" id="termsCheck"><i class="fas fa-check"></i></div>
+                                <span class="checkbox-label">I agree to the Terms & Privacy Policy</span>
+                            </div>
+                        </div>
+
+                        <button class="btn-primary gold" id="registerBtn" onclick="handleRegister()">Create
+                            Account</button>
+
+                        <div class="divider">
+                            <div class="divider-line"></div>
+                            <span class="divider-text">or sign up with</span>
+                            <div class="divider-line"></div>
+                        </div>
+
+                        <div class="social-row">
+                            <button class="social-btn google"
+                                onclick="showToast('Google sign-up coming soon', 'success')"><i
+                                    class="fab fa-google"></i> Google</button>
+                            <button class="social-btn facebook"
+                                onclick="showToast('Facebook sign-up coming soon', 'success')"><i
+                                    class="fab fa-facebook-f"></i> Facebook</button>
+                        </div>
+
+                        <div class="switch-text">Already have an account? <a class="switch-link"
+                                onclick="navigateTo('login')">Sign In</a></div>
+                    </div>
+                </div>
+
+                <!-- ===== DASHBOARD ===== -->
+                <div class="screen dashboard-screen right" id="dashboardScreen">
+                    <div class="dash-header">
+                        <div class="dash-header-bg"></div>
+                        <div class="dash-header-content">
+                            <div class="dash-top-row">
+                                <div class="dash-avatar" id="dashAvatar">E</div>
+                                <div class="dash-header-icons">
+                                    <div class="dash-icon-btn" onclick="showToast('3 new notifications', 'success')">
+                                        <i class="fas fa-bell"></i>
+                                        <div class="notif-badge">3</div>
+                                    </div>
+                                    <div class="dash-icon-btn" onclick="handleLogout()"><i
+                                            class="fas fa-sign-out-alt"></i></div>
+                                </div>
+                            </div>
+                            <div class="dash-greeting" id="dashGreeting">Hey, Explorer</div>
+                            <div class="dash-sub-greeting">Ready for your next adventure?</div>
+                            <div class="search-bar">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Search treks, destinations...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dash-body">
+                        <div class="quick-stats">
+                            <div class="stat-card">
+                                <div class="stat-icon navy"><i class="fas fa-hiking"></i></div>
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Treks Done</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon gold"><i class="fas fa-mountain"></i></div>
+                                <div class="stat-value">4,820</div>
+                                <div class="stat-label">Max Alt (m)</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon blue"><i class="fas fa-globe-asia"></i></div>
+                                <div class="stat-value">3</div>
+                                <div class="stat-label">Countries</div>
+                            </div>
+                        </div>
+
+                        <div class="section-header">
+                            <div class="section-title">Upcoming Trek</div>
+                            <a class="section-link" onclick="showToast('Opening trek details', 'success')">View
+                                Details</a>
+                        </div>
+                        <div class="upcoming-card" onclick="showToast('Annapurna Circuit details', 'success')">
+                            <div class="upcoming-card-bg"></div>
+                            <div class="upcoming-card-content">
+                                <div class="upcoming-label"><i class="fas fa-clock"></i> In 14 Days</div>
+                                <div class="upcoming-title">Annapurna Circuit</div>
+                                <div class="upcoming-location"><i class="fas fa-map-marker-alt"></i> Nepal, Himalayas
+                                </div>
+                                <div class="upcoming-meta">
+                                    <div class="meta-item"><i class="fas fa-calendar-alt"></i> 18 Days</div>
+                                    <div class="meta-item"><i class="fas fa-mountain"></i> 5,416m</div>
+                                    <div class="meta-item"><i class="fas fa-users"></i> 8 Trekkers</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="cta-banner" onclick="showToast('Opening contact form', 'success')">
+                            <div class="cta-icon"><i class="fas fa-headset"></i></div>
+                            <div class="cta-text-wrap">
+                                <div class="cta-title">Need Help Planning?</div>
+                                <div class="cta-sub">Contact our trek experts today</div>
+                            </div>
+                            <i class="fas fa-chevron-right cta-arrow"></i>
+                        </div>
+
+                        <div class="section-header">
+                            <div class="section-title">Popular Destinations</div>
+                            <a class="section-link" onclick="showToast('All destinations', 'success')">See All</a>
+                        </div>
+                        <div class="dest-scroll">
+                            <div class="dest-card" onclick="showToast('Exploring Nepal treks', 'success')">
+                                <img class="dest-card-img" src="https://picsum.photos/seed/nepalpeakv3/300/200"
+                                    alt="Nepal">
+                                <div class="dest-card-body">
+                                    <div class="dest-card-name">Nepal</div>
+                                    <div class="dest-card-info"><span class="dest-card-rating"><i
+                                                class="fas fa-star"></i> 4.9</span><span>&bull; 24 Treks</span></div>
+                                </div>
+                            </div>
+                            <div class="dest-card" onclick="showToast('Exploring Tibet treks', 'success')">
+                                <img class="dest-card-img" src="https://picsum.photos/seed/tibetplatv3/300/200"
+                                    alt="Tibet">
+                                <div class="dest-card-body">
+                                    <div class="dest-card-name">Tibet</div>
+                                    <div class="dest-card-info"><span class="dest-card-rating"><i
+                                                class="fas fa-star"></i> 4.8</span><span>&bull; 12 Treks</span></div>
+                                </div>
+                            </div>
+                            <div class="dest-card" onclick="showToast('Exploring Morocco treks', 'success')">
+                                <img class="dest-card-img" src="https://picsum.photos/seed/moroccoatv3/300/200"
+                                    alt="Morocco">
+                                <div class="dest-card-body">
+                                    <div class="dest-card-name">Morocco</div>
+                                    <div class="dest-card-info"><span class="dest-card-rating"><i
+                                                class="fas fa-star"></i> 4.7</span><span>&bull; 9 Treks</span></div>
+                                </div>
+                            </div>
+                            <div class="dest-card" onclick="showToast('Exploring Romania treks', 'success')">
+                                <img class="dest-card-img" src="https://picsum.photos/seed/romaniacv3/300/200"
+                                    alt="Romania">
+                                <div class="dest-card-body">
+                                    <div class="dest-card-name">Romania</div>
+                                    <div class="dest-card-info"><span class="dest-card-rating"><i
+                                                class="fas fa-star"></i> 4.6</span><span>&bull; 7 Treks</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-header">
+                            <div class="section-title">Trekker Reviews</div>
+                            <a class="section-link" onclick="showToast('All reviews', 'success')">All Reviews</a>
+                        </div>
+                        <div class="review-card">
+                            <img class="review-avatar" src="https://picsum.photos/seed/trekker1v3/80/80" alt="Reviewer">
+                            <div>
+                                <div class="review-name">Sarah Mitchell</div>
+                                <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                        class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                                <div class="review-text">"The Chitwan safari was magical. Saw rhinos up close. Celtic
+                                    Trekking made it seamless."</div>
+                            </div>
+                        </div>
+                        <div class="review-card">
+                            <img class="review-avatar" src="https://picsum.photos/seed/trekker2v3/80/80" alt="Reviewer">
+                            <div>
+                                <div class="review-name">James O'Brien</div>
+                                <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                        class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                                </div>
+                                <div class="review-text">"EBC trek was life-changing. Our guide Pasang was incredible.
+                                    Highly recommend."</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bottom-nav">
+                        <button class="nav-item active" aria-label="Home"><i
+                                class="fas fa-home"></i><span>Home</span></button>
+                        <button class="nav-item" aria-label="Explore"
+                            onclick="showToast('Explore section', 'success')"><i
+                                class="fas fa-compass"></i><span>Explore</span></button>
+                        <button class="nav-item" aria-label="Book" onclick="showToast('Book a new trek', 'success')">
+                            <div class="nav-item-center"><i class="fas fa-plus"></i></div><span
+                                style="margin-top:4px">Book</span>
+                        </button>
+                        <button class="nav-item" aria-label="Saved" onclick="showToast('Saved treks: 5', 'success')"><i
+                                class="fas fa-heart"></i><span>Saved</span></button>
+                        <button class="nav-item" aria-label="Profile"
+                            onclick="showToast('Profile settings', 'success')"><i
+                                class="fas fa-user"></i><span>Profile</span></button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScreen = 'login';
+
+        function navigateTo(screen) {
+            if (screen === currentScreen) return;
+            const screens = {
+                login: document.getElementById('loginScreen'),
+                register: document.getElementById('registerScreen'),
+                dashboard: document.getElementById('dashboardScreen')
+            };
+            const order = ['login', 'register', 'dashboard'];
+            const currentIdx = order.indexOf(currentScreen);
+            const newIdx = order.indexOf(screen);
+            Object.keys(screens).forEach(key => {
+                const el = screens[key];
+                if (key === screen) {
+                    el.className = 'screen ' + getScreenClass(key) + ' active';
+                } else if (key === currentScreen) {
+                    el.className = 'screen ' + getScreenClass(key) + (newIdx > currentIdx ? ' left' : ' right');
+                } else {
+                    el.className = 'screen ' + getScreenClass(key) + ' right';
+                }
+            });
+            const sb = document.getElementById('statusBar');
+            sb.className = 'status-bar light';
+            currentScreen = screen;
+        }
+
+        function getScreenClass(s) {
+            return s === 'login' ? 'login-screen' : s === 'register' ? 'register-screen' : 'dashboard-screen';
+        }
+
+        function togglePassword(id, btn) {
+            const inp = document.getElementById(id);
+            const icon = btn.querySelector('i');
+            if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fas fa-eye-slash'; }
+            else { inp.type = 'password'; icon.className = 'fas fa-eye'; }
+        }
+
+        function toggleCheckbox(wrap) {
+            wrap.querySelector('.custom-checkbox').classList.toggle('checked');
+        }
+
+        function checkPasswordStrength(pw) {
+            const bars = document.querySelectorAll('#strengthBars .strength-bar');
+            const txt = document.getElementById('strengthText');
+            let score = 0;
+            if (pw.length >= 8) score++;
+            if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+            if (/\d/.test(pw)) score++;
+            if (/[^a-zA-Z0-9]/.test(pw)) score++;
+            const levels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+            const cls = ['', 'filled-weak', 'filled-fair', 'filled-good', 'filled-strong'];
+            bars.forEach((b, i) => { b.className = 'strength-bar'; if (i < score) b.classList.add(cls[score]); });
+            txt.textContent = pw.length > 0 ? levels[score] : '';
+        }
+
+        let toastTimer = null;
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            const tt = document.getElementById('toastText');
+            const ic = t.querySelector('i');
+            tt.textContent = msg;
+            t.className = 'toast ' + type;
+            ic.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+            t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const pw = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            if (!email) { showToast('Please enter your email', 'error'); document.getElementById('loginEmail').focus(); return; }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Invalid email address', 'error'); document.getElementById('loginEmail').focus(); return; }
+            if (!pw) { showToast('Please enter your password', 'error'); document.getElementById('loginPassword').focus(); return; }
+            if (pw.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+            btn.disabled = true; btn.innerHTML = '<span class="btn-loader"></span>';
+            setTimeout(() => {
+                btn.disabled = false; btn.innerHTML = 'Sign In';
+                const name = email.split('@')[0];
+                const cap = name.charAt(0).toUpperCase() + name.slice(1);
+                document.getElementById('dashGreeting').textContent = 'Hey, ' + cap;
+                document.getElementById('dashAvatar').textContent = cap.charAt(0).toUpperCase();
+                showToast('Welcome back, ' + cap + '!', 'success');
+                setTimeout(() => navigateTo('dashboard'), 700);
+            }, 1400);
+        }
+
+        function handleRegister() {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const pw = document.getElementById('regPassword').value;
+            const dest = document.getElementById('regDestination').value;
+            const terms = document.getElementById('termsCheck').classList.contains('checked');
+            const btn = document.getElementById('registerBtn');
+            if (!name) { showToast('Please enter your name', 'error'); document.getElementById('regName').focus(); return; }
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Invalid email address', 'error'); document.getElementById('regEmail').focus(); return; }
+            if (pw.length < 8) { showToast('Password must be at least 8 characters', 'error'); document.getElementById('regPassword').focus(); return; }
+            if (!dest) { showToast('Please select a destination', 'error'); return; }
+            if (!terms) { showToast('Please agree to the Terms', 'error'); return; }
+            btn.disabled = true; btn.innerHTML = '<span class="btn-loader dark"></span>';
+            setTimeout(() => {
+                btn.disabled = false; btn.innerHTML = 'Create Account';
+                const cap = name.split(' ')[0].charAt(0).toUpperCase() + name.split(' ')[0].slice(1);
+                document.getElementById('dashGreeting').textContent = 'Hey, ' + cap;
+                document.getElementById('dashAvatar').textContent = cap.charAt(0).toUpperCase();
+                showToast('Account created successfully!', 'success');
+                setTimeout(() => navigateTo('dashboard'), 700);
+            }, 1600);
+        }
+
+        function handleLogout() {
+            showToast('Signed out', 'success');
+            setTimeout(() => navigateTo('login'), 500);
+        }
+
+        document.getElementById('loginPassword').addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+        document.getElementById('loginEmail').addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+    </script>
+</body>
+
+</html>
