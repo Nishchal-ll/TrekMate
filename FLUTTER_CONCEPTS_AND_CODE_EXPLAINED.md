@@ -23,15 +23,17 @@ This document breaks down every folder, file, Dart syntax feature, and Flutter a
 ### "Everything is a Widget"
 In Flutter, every UI element is a **Widget** — whether it's a visible button (`ElevatedButton`), an invisible layout controller (`Row`, `Column`, `Padding`), or the entire application wrapper (`MaterialApp`).
 
-```mermaid
-graph TD
-    App[CelticTrekkingApp - MaterialApp]
-    App --> Scaffold[Scaffold Screen]
-    Scaffold --> Col[Column Layout]
-    Col --> Header[Hero Header Container]
-    Col --> Form[Padding / Inputs]
-    Form --> TxtField[CustomTextField]
-    Form --> Btn[ElevatedButton]
+```text
+┌───────────────────────────────────────────────┐
+│     CelticTrekkingApp (MaterialApp)           │
+│  └─► Scaffold (Screen Scaffold)               │
+│      └─► Column (Vertical Layout)             │
+│          ├─► Container (Hero Mountain Header) │
+│          └─► Padding (Form Container)         │
+│              ├─► CustomTextField (Email)      │
+│              ├─► CustomTextField (Password)   │
+│              └─► ElevatedButton ("Sign In")   │
+└───────────────────────────────────────────────┘
 ```
 
 ### Declarative UI (Flutter) vs Imperative UI (HTML/DOM)
@@ -251,19 +253,16 @@ ListView.separated(
 
 ## 5. Widget Lifecycle & State Management
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Screen as LoginScreen (StatefulWidget)
-    participant State as _LoginScreenState
-    participant UI as Flutter Render Engine
-
-    User->>Screen: Tap "Sign In"
-    Screen->>State: _handleLogin()
-    State->>State: setState(() => _isLoading = true)
-    State->>UI: Triggers build() -> Shows Spinner
-    State->>State: UserSession.login(email)
-    State->>UI: Navigation to DashboardScreen
+```text
+User Actions ──► LoginScreen (StatefulWidget) ──► Flutter Engine
+────────────────────────────────────────────────────────────────
+1. User taps "Sign In" button
+   └─► Calls _handleLogin()
+       └─► Calls setState(() => _isLoading = true)
+           └─► Re-runs build() ──► Renders CircularProgressIndicator
+       └─► Calls UserSession.login(email)
+           └─► Calls notifyListeners() ──► Updates Dashboard user state
+       └─► Calls widget.onLoginSuccess() ──► Swaps screen to Dashboard
 ```
 
 ### Key State Methods:

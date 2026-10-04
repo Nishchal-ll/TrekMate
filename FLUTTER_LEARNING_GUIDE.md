@@ -44,14 +44,34 @@ lib/
 
 ## 3. Step-by-Step Flutter Learning Roadmap
 
-```mermaid
-flowchart TD
-    A[Step 1: Dart Basics] --> B[Step 2: Flutter Widgets & UI]
-    B --> C[Step 3: Refactoring & Structure]
-    C --> D[Step 4: State Management]
-    D --> E[Step 5: Navigation & Routing]
-    E --> F[Step 6: APIs & Async Data]
-    F --> G[Step 7: Testing & Packaging]
+```text
+┌─────────────────────────┐
+│   Step 1: Dart Basics   │
+└───────────┬─────────────┘
+            ▼
+┌─────────────────────────┐
+│ Step 2: Widgets & UI    │
+└───────────┬─────────────┘
+            ▼
+┌─────────────────────────┐
+│ Step 3: Refactoring     │
+└───────────┬─────────────┘
+            ▼
+┌─────────────────────────┐
+│ Step 4: State Mgmt      │
+└───────────┬─────────────┘
+            ▼
+┌─────────────────────────┐
+│ Step 5: Navigation      │
+└───────────┬─────────────┘
+            ▼
+┌─────────────────────────┐
+│ Step 6: APIs & Storage  │
+└───────────┬─────────────┘
+            ▼
+┌─────────────────────────┐
+│ Step 7: Testing & Build │
+└─────────────────────────┘
 ```
 
 ### 🔹 Step 1: Dart Fundamentals

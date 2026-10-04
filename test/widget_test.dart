@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:demo/app.dart';
 
@@ -64,14 +65,24 @@ void main() {
     HttpOverrides.global = _TestHttpOverrides();
   });
 
-  testWidgets('Celtic Trekking app loads login screen smoke test',
+  testWidgets('Celtic Trekking app loads splash screen and navigates to login',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const CelticTrekkingApp());
-    await tester.pumpAndSettle();
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
 
-    // Verify Welcome Back and Brand text appear
+    await tester.pumpWidget(const CelticTrekkingApp());
+    await tester.pump(const Duration(milliseconds: 500));
+
+    // Verify splash screen displays logo image
+    expect(find.byType(Image), findsWidgets);
+
+    // Fast-forward past the 2-second splash timer
+    await tester.pumpAndSettle(const Duration(milliseconds: 2500));
+
+    // Verify Login screen appears
     expect(find.text('Welcome Back'), findsOneWidget);
-    expect(find.text('CELTIC TREKKING'), findsOneWidget);
     expect(find.text('Sign In'), findsOneWidget);
   });
 }
