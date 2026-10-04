@@ -161,25 +161,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppColors.navyAccent, AppColors.gold],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Center(
-                  child: Text(
-                    session.avatarInitial,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.white,
-                    ),
+              Image.asset(
+                'assets/images/logo.png',
+                height: 42,
+                fit: BoxFit.contain,
+                errorBuilder: (_, _, _) => const Text(
+                  'CELTIC TREKKING',
+                  style: TextStyle(
+                    fontFamily: 'serif',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.white,
+                    letterSpacing: 1.0,
                   ),
                 ),
               ),
@@ -188,8 +181,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Stack(
                     children: [
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: 38,
+                        height: 38,
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(12),
@@ -202,7 +195,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           icon: const Icon(
                             Icons.notifications_outlined,
                             color: AppColors.white,
-                            size: 20,
+                            size: 19,
                           ),
                           onPressed: () => AppToast.show(
                             context,
@@ -214,8 +207,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         top: -2,
                         right: -2,
                         child: Container(
-                          width: 16,
-                          height: 16,
+                          width: 15,
+                          height: 15,
                           decoration: BoxDecoration(
                             color: AppColors.error,
                             shape: BoxShape.circle,
@@ -226,7 +219,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               '3',
                               style: TextStyle(
                                 color: AppColors.white,
-                                fontSize: 9,
+                                fontSize: 8,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -235,10 +228,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 38,
+                    height: 38,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(12),
@@ -251,7 +244,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       icon: const Icon(
                         Icons.logout,
                         color: AppColors.white,
-                        size: 18,
+                        size: 17,
                       ),
                       onPressed: _handleLogout,
                     ),

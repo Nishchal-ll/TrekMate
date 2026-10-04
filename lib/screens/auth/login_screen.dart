@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/app_styles.dart';
 import '../../models/user_session.dart';
@@ -7,7 +8,7 @@ import '../../widgets/common/custom_checkbox.dart';
 import '../../widgets/common/custom_text_field.dart';
 import '../../widgets/common/social_auth_button.dart';
 
-/// Login Screen matching Celtic Trekking design in ui.html
+/// Login Screen matching Celtic Trekking design
 class LoginScreen extends StatefulWidget {
   final VoidCallback onNavigateToRegister;
   final VoidCallback onLoginSuccess;
@@ -64,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     // Simulate network latency
-    await Future.delayed(const Duration(milliseconds: 900));
+    await Future.delayed(const Duration(milliseconds: 800));
 
     if (!mounted) return;
 
@@ -80,189 +81,213 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeroHeader(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Welcome Back', style: AppStyles.heading1),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Sign in to continue your journey',
-                    style: AppStyles.subtitle,
-                  ),
-                  const SizedBox(height: 20),
-                  CustomTextField(
-                    label: 'Email Address',
-                    placeholder: 'explorer@celtictrekking.com',
-                    prefixIcon: Icons.email_outlined,
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 14),
-                  CustomTextField(
-                    label: 'Password',
-                    placeholder: 'Enter your password',
-                    prefixIcon: Icons.lock_outline,
-                    controller: _passwordController,
-                    isPassword: true,
-                    onSubmitted: _handleLogin,
-                  ),
-                  const SizedBox(height: 14),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        child: CustomCheckbox(
-                          value: _rememberMe,
-                          onChanged: (val) {
-                            setState(() {
-                              _rememberMe = val;
-                            });
-                          },
-                          label: 'Remember me',
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          AppToast.show(context, 'Reset link sent to your email');
-                        },
-                        child: const Text(
-                          'Forgot password?',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.navy,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _handleLogin,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.navy,
-                        foregroundColor: AppColors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.white,
-                              ),
-                            )
-                          : const Text(
-                              'Sign In',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        backgroundColor: AppColors.white,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildHeroHeader(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Welcome Back', style: AppStyles.heading1),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Sign in to continue your journey',
+                      style: AppStyles.subtitle,
                     ),
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: Divider(color: AppColors.border, thickness: 1),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(
-                          'OR CONTINUE WITH',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: AppColors.muted.withValues(alpha: 0.8),
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                      const Expanded(
-                        child: Divider(color: AppColors.border, thickness: 1),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      SocialAuthButton(
-                        type: SocialType.google,
-                        onTap: () => AppToast.show(
-                          context,
-                          'Google sign-in connected',
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      SocialAuthButton(
-                        type: SocialType.facebook,
-                        onTap: () => AppToast.show(
-                          context,
-                          'Facebook sign-in connected',
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Center(
-                    child: Wrap(
-                      alignment: WrapAlignment.center,
-                      crossAxisAlignment: WrapCrossAlignment.center,
+                    const SizedBox(height: 18),
+                    CustomTextField(
+                      label: 'Email Address',
+                      placeholder: 'explorer@celtictrekking.com',
+                      prefixIcon: Icons.email_outlined,
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 14),
+                    CustomTextField(
+                      label: 'Password',
+                      placeholder: 'Enter your password',
+                      prefixIcon: Icons.lock_outline,
+                      controller: _passwordController,
+                      isPassword: true,
+                      onSubmitted: _handleLogin,
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          "Don't have an account? ",
-                          style: TextStyle(fontSize: 13, color: AppColors.muted),
+                        Flexible(
+                          child: CustomCheckbox(
+                            value: _rememberMe,
+                            onChanged: (val) {
+                              setState(() {
+                                _rememberMe = val;
+                              });
+                            },
+                            label: 'Remember me',
+                          ),
                         ),
                         GestureDetector(
-                          onTap: widget.onNavigateToRegister,
+                          onTap: () {
+                            AppToast.show(context, 'Reset link sent to your email');
+                          },
                           child: const Text(
-                            'Create one',
+                            'Forgot password?',
                             style: TextStyle(
-                              fontSize: 13,
-                              color: AppColors.navy,
-                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                              color: AppColors.primaryBlue,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
+                    const SizedBox(height: 20),
+                    // Lighter modern blue button with subtle gradient & glow
+                    Container(
+                      width: double.infinity,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [AppColors.buttonBlue, AppColors.buttonBlueDark],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.buttonBlue.withValues(alpha: 0.35),
+                            blurRadius: 14,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _isLoading ? null : _handleLogin,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Center(
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: AppColors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Sign In',
+                                    style: TextStyle(
+                                      color: AppColors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Divider(color: AppColors.border, thickness: 1),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            'OR CONTINUE WITH',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: AppColors.muted.withValues(alpha: 0.8),
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        const Expanded(
+                          child: Divider(color: AppColors.border, thickness: 1),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        SocialAuthButton(
+                          type: SocialType.google,
+                          onTap: () => AppToast.show(
+                            context,
+                            'Google sign-in connected',
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        SocialAuthButton(
+                          type: SocialType.facebook,
+                          onTap: () => AppToast.show(
+                            context,
+                            'Facebook sign-in connected',
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    Center(
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          const Text(
+                            "Don't have an account? ",
+                            style: TextStyle(fontSize: 13, color: AppColors.muted),
+                          ),
+                          GestureDetector(
+                            onTap: widget.onNavigateToRegister,
+                            child: const Text(
+                              'Create one',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.primaryBlue,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildHeroHeader() {
+    final topPadding = MediaQuery.of(context).padding.top;
     return Container(
       width: double.infinity,
-      height: 220,
+      height: 160 + topPadding,
       decoration: const BoxDecoration(
         color: AppColors.navy,
         image: DecorationImage(
           image: NetworkImage('https://picsum.photos/seed/celticmtnv3/800/500'),
           fit: BoxFit.cover,
-          opacity: 0.35,
+          opacity: 0.28,
         ),
       ),
       child: Container(
@@ -271,17 +296,19 @@ class _LoginScreenState extends State<LoginScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.navy.withValues(alpha: 0.4),
-              AppColors.navy.withValues(alpha: 0.75),
+              AppColors.navy.withValues(alpha: 0.2),
+              AppColors.navy.withValues(alpha: 0.7),
               AppColors.navy,
             ],
           ),
         ),
-        padding: const EdgeInsets.only(bottom: 20),
-        child: const Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Row(
+        padding: EdgeInsets.only(top: topPadding + 8, bottom: 14, left: 20, right: 20),
+        child: Center(
+          child: Image.asset(
+            'assets/images/logo.png',
+            height: 75,
+            fit: BoxFit.contain,
+            errorBuilder: (_, _, _) => const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.terrain, color: AppColors.gold, size: 28),
@@ -298,17 +325,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 4),
-            Text(
-              'A D V E N T U R E',
-              style: TextStyle(
-                fontSize: 10,
-                color: Color(0x99FFFFFF),
-                letterSpacing: 4.0,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

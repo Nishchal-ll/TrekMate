@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/app_styles.dart';
 import '../../models/user_session.dart';
@@ -7,7 +8,7 @@ import '../../widgets/common/custom_checkbox.dart';
 import '../../widgets/common/custom_text_field.dart';
 import '../../widgets/common/social_auth_button.dart';
 
-/// Register screen matching Celtic Trekking design in ui.html
+/// Register screen matching Celtic Trekking design
 class RegisterScreen extends StatefulWidget {
   final VoidCallback onNavigateToLogin;
   final VoidCallback onRegisterSuccess;
@@ -111,179 +112,201 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeroHeader(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: widget.onNavigateToLogin,
-                    child: const Row(
-                      children: [
-                        Icon(Icons.arrow_back, size: 16, color: AppColors.muted),
-                        SizedBox(width: 6),
-                        Text(
-                          'Back to Sign In',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.muted,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildStepIndicator(),
-                  const SizedBox(height: 18),
-                  CustomTextField(
-                    label: 'Full Name',
-                    placeholder: 'Sir Edmund Hillary',
-                    prefixIcon: Icons.person_outline,
-                    controller: _nameController,
-                  ),
-                  const SizedBox(height: 14),
-                  CustomTextField(
-                    label: 'Email Address',
-                    placeholder: 'explorer@celtictrekking.com',
-                    prefixIcon: Icons.email_outlined,
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 14),
-                  CustomTextField(
-                    label: 'Password',
-                    placeholder: 'Min. 8 characters',
-                    prefixIcon: Icons.lock_outline,
-                    controller: _passwordController,
-                    isPassword: true,
-                    onChanged: _calculatePasswordStrength,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildPasswordStrengthBar(),
-                  const SizedBox(height: 14),
-                  _buildDestinationDropdown(),
-                  const SizedBox(height: 14),
-                  CustomCheckbox(
-                    value: _agreeTerms,
-                    onChanged: (val) {
-                      setState(() {
-                        _agreeTerms = val;
-                      });
-                    },
-                    label: 'I agree to the Terms & Privacy Policy',
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _handleRegister,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.gold,
-                        foregroundColor: AppColors.navy,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.navy,
-                              ),
-                            )
-                          : const Text(
-                              'Create Account',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.navy,
-                              ),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: Divider(color: AppColors.border, thickness: 1),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(
-                          'OR SIGN UP WITH',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: AppColors.muted.withValues(alpha: 0.8),
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                      const Expanded(
-                        child: Divider(color: AppColors.border, thickness: 1),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      SocialAuthButton(
-                        type: SocialType.google,
-                        onTap: () => AppToast.show(
-                          context,
-                          'Google sign-up connected',
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      SocialAuthButton(
-                        type: SocialType.facebook,
-                        onTap: () => AppToast.show(
-                          context,
-                          'Facebook sign-up connected',
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Center(
-                    child: Wrap(
-                      alignment: WrapAlignment.center,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        const Text(
-                          'Already have an account? ',
-                          style: TextStyle(fontSize: 13, color: AppColors.muted),
-                        ),
-                        GestureDetector(
-                          onTap: widget.onNavigateToLogin,
-                          child: const Text(
-                            'Sign In',
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        backgroundColor: AppColors.white,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildHeroHeader(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: widget.onNavigateToLogin,
+                      child: const Row(
+                        children: [
+                          Icon(Icons.arrow_back, size: 16, color: AppColors.muted),
+                          SizedBox(width: 6),
+                          Text(
+                            'Back to Sign In',
                             style: TextStyle(
                               fontSize: 13,
-                              color: AppColors.navy,
-                              fontWeight: FontWeight.w700,
+                              color: AppColors.muted,
+                              fontWeight: FontWeight.w600,
                             ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildStepIndicator(),
+                    const SizedBox(height: 18),
+                    CustomTextField(
+                      label: 'Full Name',
+                      placeholder: 'Sir Edmund Hillary',
+                      prefixIcon: Icons.person_outline,
+                      controller: _nameController,
+                    ),
+                    const SizedBox(height: 14),
+                    CustomTextField(
+                      label: 'Email Address',
+                      placeholder: 'explorer@celtictrekking.com',
+                      prefixIcon: Icons.email_outlined,
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 14),
+                    CustomTextField(
+                      label: 'Password',
+                      placeholder: 'Min. 8 characters',
+                      prefixIcon: Icons.lock_outline,
+                      controller: _passwordController,
+                      isPassword: true,
+                      onChanged: _calculatePasswordStrength,
+                    ),
+                    const SizedBox(height: 8),
+                    _buildPasswordStrengthBar(),
+                    const SizedBox(height: 14),
+                    _buildDestinationDropdown(),
+                    const SizedBox(height: 14),
+                    CustomCheckbox(
+                      value: _agreeTerms,
+                      onChanged: (val) {
+                        setState(() {
+                          _agreeTerms = val;
+                        });
+                      },
+                      label: 'I agree to the Terms & Privacy Policy',
+                    ),
+                    const SizedBox(height: 20),
+                    // Lighter modern blue button
+                    Container(
+                      width: double.infinity,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [AppColors.buttonBlue, AppColors.buttonBlueDark],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.buttonBlue.withValues(alpha: 0.35),
+                            blurRadius: 14,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _isLoading ? null : _handleRegister,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Center(
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: AppColors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Create Account',
+                                    style: TextStyle(
+                                      color: AppColors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Divider(color: AppColors.border, thickness: 1),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            'OR SIGN UP WITH',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: AppColors.muted.withValues(alpha: 0.8),
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        const Expanded(
+                          child: Divider(color: AppColors.border, thickness: 1),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    Row(
+                      children: [
+                        SocialAuthButton(
+                          type: SocialType.google,
+                          onTap: () => AppToast.show(
+                            context,
+                            'Google sign-up connected',
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        SocialAuthButton(
+                          type: SocialType.facebook,
+                          onTap: () => AppToast.show(
+                            context,
+                            'Facebook sign-up connected',
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
+                    const SizedBox(height: 20),
+                    Center(
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          const Text(
+                            'Already have an account? ',
+                            style: TextStyle(fontSize: 13, color: AppColors.muted),
+                          ),
+                          GestureDetector(
+                            onTap: widget.onNavigateToLogin,
+                            child: const Text(
+                              'Sign In',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.primaryBlue,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -292,7 +315,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _buildHeroHeader() {
     return Container(
       width: double.infinity,
-      height: 140,
+      height: 150,
       decoration: const BoxDecoration(
         color: AppColors.navy,
         image: DecorationImage(
@@ -307,13 +330,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.navy.withValues(alpha: 0.3),
-              AppColors.navy.withValues(alpha: 0.7),
+              AppColors.navy.withValues(alpha: 0.35),
+              AppColors.navy.withValues(alpha: 0.75),
               AppColors.navy,
             ],
           ),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+        padding: const EdgeInsets.only(top: 36, left: 22, right: 22, bottom: 18),
         alignment: Alignment.bottomLeft,
         child: const Text(
           'Join the Expedition',
@@ -335,7 +358,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Container(
             height: 4,
             decoration: BoxDecoration(
-              color: AppColors.navy,
+              color: AppColors.primaryBlue,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -437,7 +460,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   value: 'nepal',
                   child: Row(
                     children: [
-                      Icon(Icons.explore_outlined, color: AppColors.navy, size: 18),
+                      Icon(Icons.explore_outlined, color: AppColors.primaryBlue, size: 18),
                       SizedBox(width: 10),
                       Text('Nepal — Himalayas'),
                     ],
@@ -447,7 +470,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   value: 'tibet',
                   child: Row(
                     children: [
-                      Icon(Icons.explore_outlined, color: AppColors.navy, size: 18),
+                      Icon(Icons.explore_outlined, color: AppColors.primaryBlue, size: 18),
                       SizedBox(width: 10),
                       Text('Tibet — Roof of the World'),
                     ],
@@ -457,7 +480,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   value: 'morocco',
                   child: Row(
                     children: [
-                      Icon(Icons.explore_outlined, color: AppColors.navy, size: 18),
+                      Icon(Icons.explore_outlined, color: AppColors.primaryBlue, size: 18),
                       SizedBox(width: 10),
                       Text('Morocco — Atlas Mountains'),
                     ],
@@ -467,7 +490,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   value: 'romania',
                   child: Row(
                     children: [
-                      Icon(Icons.explore_outlined, color: AppColors.navy, size: 18),
+                      Icon(Icons.explore_outlined, color: AppColors.primaryBlue, size: 18),
                       SizedBox(width: 10),
                       Text('Romania — Carpathians'),
                     ],
