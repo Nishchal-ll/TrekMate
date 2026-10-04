@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/app_styles.dart';
 
-/// Styled form text input matching ui.html
+/// Styled form text input with modern blue focus states
 class CustomTextField extends StatefulWidget {
   final String label;
   final String placeholder;
@@ -54,14 +54,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
               color: _isFocused ? AppColors.white : AppColors.inputBg,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: _isFocused ? AppColors.navy : AppColors.border,
+                color: _isFocused ? AppColors.primaryBlue : AppColors.border,
                 width: 1.5,
               ),
               boxShadow: _isFocused
                   ? [
                       BoxShadow(
-                        color: AppColors.navy.withValues(alpha: 0.08),
-                        blurRadius: 8,
+                        color: AppColors.primaryBlue.withValues(alpha: 0.12),
+                        blurRadius: 10,
                         offset: const Offset(0, 2),
                       ),
                     ]
@@ -82,7 +82,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 ),
                 prefixIcon: Icon(
                   widget.prefixIcon,
-                  color: _isFocused ? AppColors.navy : AppColors.muted,
+                  color: _isFocused ? AppColors.primaryBlue : AppColors.muted,
                   size: 18,
                 ),
                 suffixIcon: widget.isPassword

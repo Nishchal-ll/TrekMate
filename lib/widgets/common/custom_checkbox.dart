@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_colors.dart';
 
-/// Styled checkbox matching ui.html
+/// Styled checkbox matching modern blue design
 class CustomCheckbox extends StatelessWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
@@ -29,10 +29,10 @@ class CustomCheckbox extends StatelessWidget {
               width: 18,
               height: 18,
               decoration: BoxDecoration(
-                color: value ? AppColors.navy : AppColors.inputBg,
+                color: value ? AppColors.primaryBlue : AppColors.inputBg,
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(
-                  color: value ? AppColors.navy : AppColors.border,
+                  color: value ? AppColors.primaryBlue : AppColors.border,
                   width: 1.5,
                 ),
               ),
@@ -53,7 +53,7 @@ class CustomCheckbox extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 13,
                   color: AppColors.muted,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
