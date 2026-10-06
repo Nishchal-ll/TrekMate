@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 900),
     );
 
     _fadeAnimation = CurvedAnimation(
@@ -34,16 +34,16 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeIn,
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.82, end: 1.0).animate(
+    _scaleAnimation = Tween<double>(begin: 0.88, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Curves.easeOutBack,
+        curve: Curves.easeOutCubic,
       ),
     );
 
     _controller.forward();
 
-    // Automatically navigate to Login screen after splash display
+    // Automatically navigate to Login screen after 2 seconds
     _navigationTimer = Timer(const Duration(milliseconds: 2000), () {
       if (mounted) {
         widget.onContinue();
@@ -61,105 +61,44 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.navy,
+      backgroundColor: AppColors.white,
       body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: () {
           _navigationTimer?.cancel();
           widget.onContinue();
         },
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFF0F172A),
-                Color(0xFF1E3A8A),
-                Color(0xFF0F172A),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Subtle background glow
-              Container(
-                width: 260,
-                height: 260,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.primaryBlue.withValues(alpha: 0.25),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryBlue.withValues(alpha: 0.35),
-                      blurRadius: 90,
-                      spreadRadius: 20,
+        child: Center(
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: Image.asset(
+                'assets/images/logo.png',
+                width: 220,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.terrain_rounded,
+                      color: AppColors.navy,
+                      size: 72,
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      'CELTIC TREKKING',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.navy,
+                        letterSpacing: 1.5,
+                      ),
                     ),
                   ],
                 ),
               ),
-
-              // Centered Brand Logo
-              Center(
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: ScaleTransition(
-                    scale: _scaleAnimation,
-                    child: Container(
-                      width: 140,
-                      height: 140,
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(32),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.35),
-                            blurRadius: 30,
-                            offset: const Offset(0, 12),
-                          ),
-                          BoxShadow(
-                            color: AppColors.primaryBlue.withValues(alpha: 0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(
-                          Icons.terrain_rounded,
-                          color: AppColors.primaryBlue,
-                          size: 70,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              // Subtle bottom loading indicator
-              Positioned(
-                bottom: 50,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.white.withValues(alpha: 0.7),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

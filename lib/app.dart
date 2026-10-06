@@ -85,7 +85,7 @@ class _CelticTrekkingAppState extends State<CelticTrekkingApp> {
                           height: 350,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: AppColors.navyAccent.withValues(alpha: 0.2),
+                            color: AppColors.primaryBlue.withValues(alpha: 0.2),
                           ),
                         ),
                       ),
